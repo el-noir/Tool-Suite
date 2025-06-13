@@ -100,66 +100,62 @@ export default function SSLChecker() {
   const [usedMockData, setUsedMockData] = useState(false)
   const { toast } = useToast()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!domain) {
-      toast({
-        title: "Error",
-        description: "Please enter a domain",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-    setUsedMockData(false)
-
-    try {
-      console.log(`Sending request to check SSL for ${domain}`)
-
-      try {
-        // Try to fetch from the API
-        const response = await fetch(`http://localhost:3000/api/xss-test`, {
-          // Add a short timeout to fail fast if the API is not available
-          signal: AbortSignal.timeout(5000),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
-          throw new Error(errorData.error || `Error: ${response.status} ${response.statusText}`)
-        }
-
-        const data = await response.json()
-        console.log("SSL check response:", data)
-
-        if (data.success) {
-          setResult(data.data)
-        } else {
-          throw new Error(data.error || "Failed to check SSL certificate")
-        }
-      } catch (fetchError) {
-        console.warn("API fetch failed, using mock data:", fetchError)
-
-        // If the API is not available, use mock data
-        setUsedMockData(true)
-        setResult(generateMockData(domain))
-
-        // Don't throw the error, we're handling it with mock data
-      }
-    } catch (err) {
-      console.error("SSL check error:", err)
-      setError(err instanceof Error ? err.message : "An unknown error occurred")
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "Failed to check SSL certificate",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
+  if (!domain) {
+    toast({
+      title: "Error",
+      description: "Please enter a domain",
+      variant: "destructive",
+    });
+    return;
   }
+
+  setIsLoading(true);
+  setError(null);
+  setUsedMockData(false);
+
+  try {
+    console.log(`Sending request to check XSS for input: ${domain}`);
+
+    // Try to fetch from the API
+    const response = await fetch('http://localhost:3000/api/xss-test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ input: domain }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("XSS test response:", data);
+
+    if (data.success) {
+      // Handle successful XSS check
+      setResult(data.data);
+    } else {
+      // Handle XSS detected case
+      setError(data.error || "XSS attempt detected");
+      toast({
+        title: "Security Alert",
+        description: data.error || "XSS attempt detected",
+        variant: "destructive",
+      });
+    }
+  } catch (err) {
+    console.warn("API fetch failed, using mock data:", err);
+    setUsedMockData(true);
+    setResult(generateMockData(domain));
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const formatDate = (dateString: string) => {
     try {
