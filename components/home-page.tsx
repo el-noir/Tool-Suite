@@ -133,7 +133,7 @@ export default function HomePage() {
       iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
       iconColor: "text-emerald-600 dark:text-emerald-400",
       active: true,
-      route: "/firewall-defender",
+      route: "https://firewall-defenders-game.vercel.app/",
       featured: true,
       new: true,
     },
