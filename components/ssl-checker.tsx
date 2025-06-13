@@ -10,6 +10,7 @@ import { AlertTriangle, CheckCircle } from "lucide-react";
 
 export default function XSSTester() {
   const [payload, setPayload] = useState("");
+  const [storedPayload, setStoredPayload] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -18,27 +19,18 @@ export default function XSSTester() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/xss-test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ input: payload }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send payload');
-      }
+      // Simulate storing the payload (in a real app, this would be sent to a backend)
+      setStoredPayload(payload);
 
       toast({
-        title: "Payload sent successfully",
-        description: "Check your backend console for logs",
+        title: "Payload stored successfully",
+        description: "The XSS payload will execute when rendered.",
         variant: "default",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send payload",
+        description: error instanceof Error ? error.message : "Failed to store payload",
         variant: "destructive",
       });
     } finally {
@@ -50,9 +42,9 @@ export default function XSSTester() {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>SSL CHECKER</CardTitle>
+          <CardTitle>XSS TESTER</CardTitle>
           <CardDescription>
-            Submit
+            Submit a payload to test for stored XSS vulnerabilities.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -64,15 +56,23 @@ export default function XSSTester() {
               className="font-mono"
             />
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Sending..." : "Send Payload"}
+              {isLoading ? "Storing..." : "Store Payload"}
             </Button>
           </form>
 
+          {/* Vulnerable Rendering of Stored Payload */}
+          {storedPayload && (
+            <div className="mt-6 p-4 border rounded bg-gray-100">
+              <h3 className="font-bold mb-2">Stored Payload Preview:</h3>
+              <div dangerouslySetInnerHTML={{ __html: storedPayload }} />
+            </div>
+          )}
+
           <Alert className="mt-6">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Note</AlertTitle>
+            <AlertTitle>Warning</AlertTitle>
             <AlertDescription>
-              
+              This component intentionally renders unsanitized input to demonstrate XSS vulnerabilities. Do not use this in production.
             </AlertDescription>
           </Alert>
         </CardContent>
