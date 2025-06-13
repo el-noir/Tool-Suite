@@ -50,9 +50,9 @@ export default function XSSTester() {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>XSS Payload Tester</CardTitle>
+          <CardTitle>SSL CHECKER</CardTitle>
           <CardDescription>
-            Submit XSS payloads to test backend detection
+            Submit
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,7 +72,7 @@ export default function XSSTester() {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Note</AlertTitle>
             <AlertDescription>
-              This will only send the payload to the backend. Check your server console for detection logs.
+              
             </AlertDescription>
           </Alert>
         </CardContent>
