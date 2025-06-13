@@ -121,7 +121,7 @@ export default function SSLChecker() {
 
       try {
         // Try to fetch from the API
-        const response = await fetch(`http://localhost:3000/api/ssl/check?target=${encodeURIComponent(domain)}`, {
+        const response = await fetch(`http://localhost:3000/api/xss-test`, {
           // Add a short timeout to fail fast if the API is not available
           signal: AbortSignal.timeout(5000),
         })
